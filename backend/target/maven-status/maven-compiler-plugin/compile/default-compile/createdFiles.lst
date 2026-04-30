@@ -1,0 +1,16 @@
+classifier/KNNClassifier.class
+data/PreProcessor.class
+server/ApiServer.class
+classifier/DecisionTreeClassifier.class
+classifier/IClassifier.class
+server/handlers/StatusHandler.class
+Main.class
+evaluation/Evaluator.class
+classifier/BaseAlgorithm.class
+classifier/DecisionTreeClassifier$TreeNode.class
+data/DataLoader.class
+data/DataLoader$1.class
+model/UserRecord.class
+server/handlers/TrainHandler.class
+evaluation/Evaluator$EvaluationResult.class
+server/handlers/LoadHandler.class

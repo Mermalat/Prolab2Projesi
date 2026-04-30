@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Classifier Dashboard — Kocaeli Üniversitesi</title>
+    <meta name="description" content="Makine Öğrenmesi sınıflandırma panosu — KNN ve Karar Ağacı algoritmaları">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header id="main-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                            <rect x="2" y="2" width="32" height="32" rx="7" stroke="#4f46e5" stroke-width="2"/>
+                            <path d="M11 25L18 11L25 25" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="18" cy="18" r="2.5" fill="#4f46e5"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1>ML Tahmin Aracı</h1>
+                        <p class="subtitle">Kocaeli Üniversitesi • KNN & Karar Ağacı tahmin aracı</p>
+                    </div>
+                </div>
+                <div class="status-indicator" id="serverStatus">
+                    <span class="status-dot offline"></span>
+                    <span class="status-text">Kontrol ediliyor...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- PANEL 1: DATA LOADING -->
+        <section class="panel" id="loadPanel">
+            <div class="panel-header">
+                <span class="panel-number">01</span>
+                <h2>Dataset Yükle</h2>
+                <span class="panel-tag">VERİ GİRİŞİ</span>
+            </div>
+            <div class="panel-body">
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <path d="M20 28V14M20 14L14 20M20 14L26 20" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6 26V30C6 32.2091 7.79086 34 10 34H30C32.2091 34 34 32.2091 34 30V26" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <p>Excel dosyasını buraya sürükleyin veya tıklayarak seçin</p>
+                    <p class="upload-hint">MarketSalesKocaeli.xlsx (5000+ kayıt bekleniyor)</p>
+                    <input type="file" id="fileUpload" accept=".xlsx" style="display:none">
+                </div>
+                <div class="file-info" id="fileInfo" style="display:none">
+                    <span class="file-icon">📄</span>
+                    <span id="fileName"></span>
+                    <button class="btn-icon" onclick="clearFile()" title="Remove">✕</button>
+                </div>
+                <button class="btn btn-primary" id="loadBtn" onclick="loadData()">
+                    <span class="btn-text">Upload & Process</span>
+                    <span class="btn-loader" style="display:none"></span>
+                </button>
+                <div id="loadStatus" class="status-msg"></div>
+                <div id="loadStats" class="load-stats" style="display:none"></div>
+            </div>
+        </section>
+
+        <!-- PANEL 2: MODEL CONFIGURATION -->
+        <section class="panel" id="configPanel">
+            <div class="panel-header">
+                <span class="panel-number">02</span>
+                <h2>Model Ayarları</h2>
+                <span class="panel-tag">PARAMETRELER</span>
+            </div>
+            <div class="panel-body">
+                <div class="config-grid">
+                    <div class="config-section">
+                        <h3>Algoritma Seçimi</h3>
+                        <div class="toggle-group" id="algoToggle">
+                            <label class="toggle-btn"><input type="radio" name="algo" value="KNN" onchange="toggleConfig()"><span>KNN</span></label>
+                            <label class="toggle-btn"><input type="radio" name="algo" value="DT" onchange="toggleConfig()"><span>Decision Tree</span></label>
+                            <label class="toggle-btn active"><input type="radio" name="algo" value="BOTH" checked onchange="toggleConfig()"><span>Both</span></label>
+                        </div>
+                    </div>
+                    <div class="config-section" id="knnConfig">
+                        <h3>KNN Parametreleri</h3>
+                        <div class="param-row">
+                            <label for="kValue">K Komşu</label>
+                            <div class="input-group">
+                                <button class="btn-stepper" onclick="stepValue('kValue',-1)">−</button>
+                                <input type="number" id="kValue" value="5" min="1" max="50">
+                                <button class="btn-stepper" onclick="stepValue('kValue',1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-section" id="dtConfig">
+                        <h3>Decision Tree Parametreleri</h3>
+                        <div class="param-row">
+                            <label for="maxDepth">Max Depth</label>
+                            <div class="input-group">
+                                <button class="btn-stepper" onclick="stepValue('maxDepth',-1)">−</button>
+                                <input type="number" id="maxDepth" value="10" min="1" max="30">
+                                <button class="btn-stepper" onclick="stepValue('maxDepth',1)">+</button>
+                            </div>
+                        </div>
+                        <div class="param-row">
+                            <label>Bölünme Kriteri</label>
+                            <div class="toggle-group small">
+                                <label class="toggle-btn active"><input type="radio" name="criterion" value="gini" checked><span>Gini</span></label>
+                                <label class="toggle-btn"><input type="radio" name="criterion" value="infogain"><span>Info Gain</span></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-section">
+                        <h3>Eğitim / Test Veri Seti</h3>
+                        <div class="slider-container">
+                            <input type="range" id="trainRatio" min="60" max="90" value="80" oninput="updateSlider()">
+                            <div class="slider-labels">
+                                <span>Eğitim: <strong id="trainPct">80%</strong></span>
+                                <span>Test: <strong id="testPct">20%</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-large" id="trainBtn" onclick="trainModel()">
+                    <span class="btn-text">Eğit & Değerlendir</span>
+                    <span class="btn-loader" style="display:none"></span>
+                </button>
+                <div id="trainWarning" class="status-msg"></div>
+            </div>
+        </section>
+
+        <!-- PANEL 3: RESULTS -->
+        <section class="panel" id="resultsPanel" style="display:none">
+            <div class="panel-header">
+                <span class="panel-number">03</span>
+                <h2>Sonuçlar</h2>
+                <span class="panel-tag">DEĞERLENDİRME</span>
+            </div>
+            <div class="panel-body">
+                <div class="cards-row" id="cardsContainer"></div>
+                <div id="comparisonTableContainer"></div>
+            </div>
+        </section>
+
+        <!-- PANEL 4: CONFUSION MATRICES -->
+        <section class="panel" id="cmPanel" style="display:none">
+            <div class="panel-header">
+                <span class="panel-number">04</span>
+                <h2>Hata Matrisleri</h2>
+                <span class="panel-tag">ANALIZ</span>
+            </div>
+            <div class="panel-body">
+                <div class="cm-grid" id="cmContainer"></div>
+            </div>
+        </section>
+
+        <!-- PANEL 5: CHARTS -->
+        <section class="panel" id="chartsPanel" style="display:none">
+            <div class="panel-header">
+                <span class="panel-number">05</span>
+                <h2>Görsel Analitik</h2>
+                <span class="panel-tag">GRAFİKLER</span>
+            </div>
+            <div class="panel-body">
+                <div class="charts-grid">
+                    <div class="chart-card"><h3>Sınıfa Göre Doğruluk</h3><div class="chart-wrap"><canvas id="barChart"></canvas></div></div>
+                    <div class="chart-card"><h3>Kategori Dağılımı</h3><div class="chart-wrap"><canvas id="pieChart"></canvas></div></div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Kocaeli Üniversitesi • Makine Öğrenmesi 2. Proje Ödevi • 2026</p>
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

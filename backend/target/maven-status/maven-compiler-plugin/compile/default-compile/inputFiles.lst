@@ -1,0 +1,13 @@
+/home/merma/Code/prolab2projectnew/backend/src/main/java/server/handlers/TrainHandler.java
+/home/merma/Code/prolab2projectnew/backend/src/main/java/data/PreProcessor.java
+/home/merma/Code/prolab2projectnew/backend/src/main/java/classifier/IClassifier.java
+/home/merma/Code/prolab2projectnew/backend/src/main/java/Main.java
+/home/merma/Code/prolab2projectnew/backend/src/main/java/server/handlers/StatusHandler.java
+/home/merma/Code/prolab2projectnew/backend/src/main/java/server/handlers/LoadHandler.java
+/home/merma/Code/prolab2projectnew/backend/src/main/java/data/DataLoader.java
+/home/merma/Code/prolab2projectnew/backend/src/main/java/classifier/DecisionTreeClassifier.java
+/home/merma/Code/prolab2projectnew/backend/src/main/java/classifier/KNNClassifier.java
+/home/merma/Code/prolab2projectnew/backend/src/main/java/model/UserRecord.java
+/home/merma/Code/prolab2projectnew/backend/src/main/java/evaluation/Evaluator.java
+/home/merma/Code/prolab2projectnew/backend/src/main/java/classifier/BaseAlgorithm.java
+/home/merma/Code/prolab2projectnew/backend/src/main/java/server/ApiServer.java
